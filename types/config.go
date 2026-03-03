@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos72/gls"
 )
 
 // DefaultKeyringServiceName defines a default service name for the keyring.
@@ -55,11 +56,18 @@ func NewConfig() *Config {
 }
 
 // GetConfig returns the config instance for the SDK.
+// xhanka00 - there is specific instance for each goroutine enabling parallel use of the sdk for different blockchains at the same time
 func GetConfig() *Config {
-	initConfig.Do(func() {
+	sdkConfig, ok := gls.Get("sdkConfig")
+	if !ok {
 		sdkConfig = NewConfig()
-	})
-	return sdkConfig
+		gls.Set("sdkConfig", sdkConfig)
+		//fmt.Printf("SDK - new config created for %s\n", gls.GoID())
+	} else {
+		//fmt.Printf("SDK - reusing config for %s\n", gls.GoID())
+	}
+
+	return sdkConfig.(*Config)
 }
 
 // GetSealedConfig returns the config instance for the SDK if/once it is sealed.
