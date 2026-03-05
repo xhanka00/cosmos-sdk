@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bgentry/speakeasy"
 	isatty "github.com/mattn/go-isatty"
 )
 
@@ -18,11 +17,7 @@ const MinPassLength = 8
 // GetPassword will prompt for a password one-time (to sign a tx)
 // It enforces the password length
 func GetPassword(prompt string, buf *bufio.Reader) (pass string, err error) {
-	if inputIsTty() {
-		pass, err = speakeasy.FAsk(os.Stderr, prompt)
-	} else {
-		pass, err = readLineFromBuf(buf)
-	}
+	pass, err = readLineFromBuf(buf)
 
 	if err != nil {
 		return "", err
